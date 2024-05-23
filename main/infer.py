@@ -39,6 +39,12 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def get_images_from_folder(foldername:str):
+    files = []
+    for filename in os.listdir(foldername):
+            files.append(filename)
+    return files
+
 def main():
 
     args = parse_args()
@@ -70,8 +76,12 @@ def main():
     config_file= '../pretrained_models/mmdet/mmdet_faster_rcnn_r50_fpn_coco.py'
     model = init_detector(config_file, checkpoint_file, device='cuda:0')  # or device='cuda:0'
 
-    for frame in tqdm(range(start, end)):
-        img_path = os.path.join(args.img_path, f'{int(frame):06d}.jpg')
+    filenames = get_images_from_folder(args.img_path)
+    print(filenames)
+
+
+    for imgfilename in tqdm(filenames):
+        img_path = os.path.join(args.img_path, imgfilename)
 
         # prepare input image
         transform = transforms.ToTensor()
@@ -135,7 +145,7 @@ def main():
             if args.save_mesh:
                 save_path_mesh = os.path.join(args.output_folder, 'mesh')
                 os.makedirs(save_path_mesh, exist_ok= True)
-                save_obj(mesh, smpl_x.face, os.path.join(save_path_mesh, f'{frame:05}_{bbox_id}.obj'))
+                save_obj(mesh, smpl_x.face, os.path.join(save_path_mesh, f'{imgfilename}_{bbox_id}.obj'))
 
             ## save single person param
             smplx_pred = {}
@@ -152,7 +162,7 @@ def main():
             save_path_smplx = os.path.join(args.output_folder, 'smplx')
             os.makedirs(save_path_smplx, exist_ok= True)
 
-            npz_path = os.path.join(save_path_smplx, f'{frame:05}_{bbox_id}.npz')
+            npz_path = os.path.join(save_path_smplx, f'{imgfilename}_{bbox_id}.npz')
             np.savez(npz_path, **smplx_pred)
 
             ## render single person mesh
@@ -174,7 +184,7 @@ def main():
 
             save_path_meta = os.path.join(args.output_folder, 'meta')
             os.makedirs(save_path_meta, exist_ok= True)
-            with open(os.path.join(save_path_meta, f'{frame:05}_{bbox_id}.json'), "w") as outfile:
+            with open(os.path.join(save_path_meta, f'{imgfilename}_{bbox_id}.json'), "w") as outfile:
                 outfile.write(json_object)
 
         ## save rendered image with all person
