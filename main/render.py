@@ -217,7 +217,6 @@ def call_frame_render(args):
     return render_frame(*args)
 
 def visualize_seqs(args):
-
     if args.seq == 'default':
         seqs = glob.glob(os.path.join(args.data_path, '**/smplx'), recursive=True)
         seqs = [os.path.dirname(p) for p in seqs]

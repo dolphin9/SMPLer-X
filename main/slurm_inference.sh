@@ -28,14 +28,14 @@ echo $end_count
 
 # inference
 PYTHONPATH="$(dirname $0)/..":$PYTHONPATH \
-srun -p ${PARTITION} \
-    --job-name=${JOB_NAME} \
-    --gres=gpu:${GPUS_PER_NODE} \
-    --ntasks=${GPUS} \
-    --ntasks-per-node=${GPUS_PER_NODE} \
-    --cpus-per-task=${CPUS_PER_TASK} \
-    --kill-on-bad-exit=1 \
-    ${SRUN_ARGS} \
+# srun -p ${PARTITION} \
+#     --job-name=${JOB_NAME} \
+#     --gres=gpu:${GPUS_PER_NODE} \
+#     --ntasks=${GPUS} \
+#     --ntasks-per-node=${GPUS_PER_NODE} \
+#     --cpus-per-task=${CPUS_PER_TASK} \
+#     --kill-on-bad-exit=1 \
+#     ${SRUN_ARGS} \
     python inference.py \
     --num_gpus ${GPUS_PER_NODE} \
     --exp_name output/demo_${JOB_NAME} \
@@ -54,4 +54,4 @@ srun -p ${PARTITION} \
 
 
 # images to video
-ffmpeg -y -f image2 -r ${FPS} -i ${SAVE_DIR}/img/%06d.jpg -vcodec mjpeg -qscale 0 -pix_fmt yuv420p ../demo/results/${INPUT_VIDEO}.mp4
+ffmpeg -y -f image2 -r ${FPS} -i ${SAVE_DIR}/img/%06d.jpg -vcodec mjpeg -q:v 0 -pix_fmt yuv420p -strict unofficial ../demo/results/${INPUT_VIDEO}.mp4
